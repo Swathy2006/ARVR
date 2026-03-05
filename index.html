@@ -1,30 +1,134 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8" />
-  <title>Young Innovators STEM Lab</title>
-  <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+<title>Animal Survivor VR</title>
+
+<script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+
 </head>
 
 <body>
-  <a-scene>
 
-    <a-sky color="purple"></a-sky>
-    <a-box position="-1 -0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-    <a-sphere position="0 0.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-    <a-cylinder position="1 -0.25 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-    <a-plane position="0 -1 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-    
-    <a-image src="https://downloadscdn6.freepik.com/488145/4/3540.jpg?filename=closeup-scarlet-macaw-from-side-view-scarlet-macaw-closeup-head.jpg&token=exp=1772701691~hmac=c26074a58274460ea379062c15d22864&filename=3540.jpg" position="0 5 -7"
-      width="20" height="14"></a-image>
-    
-    <a-text value="ANIMAL SURVIVOR" position="0 9.5 -10" align="center" color="white" font="mozillavr"
-      width="10" height="5" anchor="center">
-    </a-text>
+<div id="score"
+style="position:absolute;
+top:10px;
+left:10px;
+font-size:25px;
+color:white;
+z-index:999;">
+Score: 0
+</div>
 
+<a-scene>
 
-  </a-scene>
+<a-sky color="#88ccee"></a-sky>
+
+<a-plane rotation="-90 0 0"
+width="100"
+height="100"
+color="green">
+</a-plane>
+
+<a-cylinder position="4 1 -5" radius="0.3" height="3" color="brown"></a-cylinder>
+<a-sphere position="4 3 -5" radius="1.5" color="darkgreen"></a-sphere>
+
+<a-cylinder position="-5 1 -6" radius="0.3" height="3" color="brown"></a-cylinder>
+<a-sphere position="-5 3 -6" radius="1.5" color="darkgreen"></a-sphere>
+
+<a-box id="deer"
+position="0 1 -6"
+color="orange"
+depth="1"
+height="1"
+width="2">
+</a-box>
+
+<a-box id="tiger"
+position="6 1 -6"
+color="red"
+depth="2"
+height="1"
+width="3">
+</a-box>
+
+<a-sphere id="food"
+position="2 1 -4"
+radius="0.4"
+color="yellow">
+</a-sphere>
+
+<a-entity id="player" position="0 1.6 0">
+<a-camera></a-camera>
+</a-entity>
+
+</a-scene>
+
+<script>
+
+let score = 0;
+
+const food = document.querySelector("#food");
+const deer = document.querySelector("#deer");
+const tiger = document.querySelector("#tiger");
+const player = document.querySelector("#player");
+
+function distance(a,b){
+
+let dx = a.x-b.x;
+let dy = a.y-b.y;
+let dz = a.z-b.z;
+
+return Math.sqrt(dx*dx + dy*dy + dz*dz);
+
+}
+
+function gameLoop(){
+
+let playerPos = player.object3D.position;
+let foodPos = food.object3D.position;
+let deerPos = deer.object3D.position;
+let tigerPos = tiger.object3D.position;
+
+let distFood = distance(playerPos,foodPos);
+
+if(distFood < 1.5){
+
+score++;
+
+document.getElementById("score").innerText = "Score: " + score;
+
+food.setAttribute("position",{
+x:Math.random()*10-5,
+y:1,
+z:-Math.random()*10
+});
+
+}
+
+let dx = deerPos.x - tigerPos.x;
+let dz = deerPos.z - tigerPos.z;
+
+tiger.object3D.position.x += dx * 0.0008;
+tiger.object3D.position.z += dz * 0.0008;
+
+let distTiger = distance(deerPos,tigerPos);
+
+if(distTiger < 1){
+
+document.getElementById("score").innerText =
+"Game Over - Tiger caught the deer. Final Score: " + score;
+
+return;
+
+}
+
+requestAnimationFrame(gameLoop);
+
+}
+
+gameLoop();
+
+</script>
+
 </body>
-
 </html>
